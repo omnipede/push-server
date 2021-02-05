@@ -56,6 +56,9 @@ export class SystemExceptionFilter implements ExceptionFilter {
   }
 }
 
+/**
+ * Http exception 을 잡는 필터
+ */
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
 

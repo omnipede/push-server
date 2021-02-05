@@ -75,7 +75,7 @@ export class ClientHmacGuard implements CanActivate {
    * @private
    */
   private async getRawBodyFromRequest(request: Request): Promise<string> {
-    // 미들웨어 상에서 rawBody 를 넣어주고 있다. 만약 해당 미들웨어가 rawBody 를 세팅하지 않으면
+    // main.ts 미들웨어 상에서 rawBody 를 넣어주고 있다. 만약 해당 미들웨어가 rawBody 를 세팅하지 않으면
     // 에러를 일으키도록 코딩함
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
