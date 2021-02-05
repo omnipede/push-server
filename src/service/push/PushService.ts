@@ -23,7 +23,7 @@ export class PushService {
     const app = await this.getCachedApp(client);
     // multi message 를 보내고 결과를 반환한다.
     // Dry-run: true 면 푸시가 안 간다
-    const response = await app.messaging().sendMulticast(message, true);
+    const response = await app.messaging().sendMulticast(message, false);
     // 에러인 토큰만 찾아서 반환한다.
     return response.responses
       .map((res, idx) => res.error ? message.tokens[idx] : null)

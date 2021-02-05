@@ -9,6 +9,7 @@ import { ClientService } from './service/client/ClientService';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PushTokenEntity } from './service/token/PushTokenEntity';
 import { ClientEntity } from './service/client/ClientEntity';
+import { TokenController } from './controller/TokenController';
 
 /**
  * IoC container
@@ -28,14 +29,14 @@ import { ClientEntity } from './service/client/ClientEntity';
       timezone: 'Z',
       autoLoadEntities: true,
       keepConnectionAlive: true,
-      logging: true,
+      logging: false,
     }),
     // Table entity 등록
     TypeOrmModule.forFeature([
       ClientEntity, PushTokenEntity
     ])
   ],
-  controllers: [PushController],
+  controllers: [PushController, TokenController],
   providers: [
     PushMessageApplication,
     PushTokenService, PushService, ClientService

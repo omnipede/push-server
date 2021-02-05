@@ -4,12 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn, Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { ClientEntity } from '../client/ClientEntity';
 
 @Entity({ name: 't_push_token' })
+@Unique(["client_id", "id", "token"])
 export class PushTokenEntity {
   // PK
   @PrimaryGeneratedColumn()
@@ -40,4 +41,10 @@ export class PushTokenEntity {
   @ManyToOne(() => ClientEntity, client => client.tokenList, { onDelete: 'CASCADE', nullable: false, eager: true })
   @JoinColumn({ name: 'client_id' })
   client: ClientEntity;
+
+  constructor(clientId: string, tokenId: string, token: string) {
+    this.client_id = clientId;
+    this.id = tokenId;
+    this.token = token;
+  }
 }
