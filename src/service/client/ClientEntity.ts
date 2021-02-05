@@ -9,6 +9,9 @@ export class ClientEntity {
   @Column('text', { name: 'account', nullable: false })
   account: string;
 
+  @Column({ name: 'secret', nullable: false })
+  secret: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

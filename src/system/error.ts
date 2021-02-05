@@ -2,7 +2,9 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@n
 import { Response } from 'express';
 
 export class ErrorCode {
-  static readonly InvalidBody = new ErrorCode(400, 40000, 'Invalid request body');
+  static readonly BadRequest = new ErrorCode(400, 40000, 'Bad request');
+  static readonly InvalidBody = new ErrorCode(400, 40001, 'Invalid request body');
+  static readonly AuthFailed = new ErrorCode(401, 40100, 'Authentication failed');
   static readonly NotFoundUri = new ErrorCode(404, 40400, 'Not found uri or maybe wrong http method');
   static readonly NotFoundData = new ErrorCode(404, 40401, 'Not found data');
   static readonly InternalServerError = new ErrorCode(500, 50000, 'Internal server error');
