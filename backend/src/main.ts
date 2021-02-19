@@ -15,6 +15,7 @@ import { ClientHmacGuard } from './system/guard';
 import { DBModule } from './system/db';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './system/config';
+import * as helmet from 'helmet';
 
 /**
  * 서버 시작 스크립트.
@@ -70,6 +71,9 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalErrorFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(new SystemExceptionFilter());
+
+  // 보안모듈 적용
+  app.use(helmet());
 
   // CORS 허용
   app.enableCors();
