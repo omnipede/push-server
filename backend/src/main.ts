@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Module } from '@nestjs/common';
+import { Logger, LogLevel, Module } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
 import { PushController } from './controller/PushController';
 import { PushMessageApplication } from './application/PushMessageApplication';
@@ -12,6 +12,9 @@ import { PushTokenEntity } from './service/token/PushTokenEntity';
 import { ClientEntity } from './service/client/ClientEntity';
 import { TokenController } from './controller/TokenController';
 import { ClientHmacGuard } from './system/guard';
+import { DBModule } from './system/db';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import config from './system/config';
 
 /**
  * 서버 시작 스크립트.
@@ -24,28 +27,22 @@ import { ClientHmacGuard } from './system/guard';
  */
 @Module({
   imports: [
-    // Database connection
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'password',
-      database: 'database_development',
-      synchronize: true,
-      dropSchema: false,
-      timezone: 'Z',
-      autoLoadEntities: true,
-      keepConnectionAlive: true,
-      logging: false,
+    // Configuration module
+    ConfigModule.forRoot({
+      load: [config],
+      isGlobal: true,
     }),
+    // Database connection
+    DBModule,
     // Table entity 등록
     TypeOrmModule.forFeature([
       ClientEntity, PushTokenEntity
-    ])
+    ]),
   ],
   // Controller layer
-  controllers: [PushController, TokenController],
+  controllers: [
+    PushController, TokenController
+  ],
   // Service layer
   providers: [
     PushMessageApplication,
@@ -55,6 +52,9 @@ import { ClientHmacGuard } from './system/guard';
 })
 class AppModule {}
 
+// Bootstrap logger
+const logger: Logger  = new Logger("Bootstrap");
+
 /**
  * Boot strap server app module
  */
@@ -63,19 +63,35 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false
   });
+
+  // App server filter, pipe 설정
   app.use(bodyParser.urlencoded({ verify: rawBodyBuffer, extended: true }));
   app.use(bodyParser.json({ verify: rawBodyBuffer }));
   app.useGlobalFilters(new GlobalErrorFilter());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(new SystemExceptionFilter());
-  await app.listen(3000);
+
+  // CORS 허용
+  app.enableCors();
+
+  // 설정 값 받아오기
+  const configService: ConfigService = app.get<ConfigService>(ConfigService);
+  const port: number = configService.get( "server.port", 3000 ); // 포트 설정
+  const logLevel: LogLevel[] = configService.get( "logger", [] ); // 로그 레벨 설정
+
+  // 로그 레벨 설정
+  app.useLogger(logLevel);
+
+  // 리스닝 시작
+  await app.listen(port);
+  logger.log(`Server is listening on port ${port}`);
 }
 
 /**
  * Request 의 raw body 를 임시로 요청 객체에 저장하는 메소드
- * @param req
- * @param res
- * @param buf
+ * @param req Http request object
+ * @param res Http response object
+ * @param buf Body buffer
  */
 const rawBodyBuffer = (req, res, buf) => {
   if (buf && buf.length) {
