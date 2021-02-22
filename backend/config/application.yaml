@@ -20,3 +20,10 @@ db:
   # (Change me)
   # 데이터베이스 서버의 타임존
   timezone: '+09:00'
+
+jwt:
+  secret: foobarsecret
+  access:
+    expire: 3m
+  refresh:
+    expire: 1h

@@ -16,6 +16,7 @@ import { DBModule } from './system/db';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './system/config';
 import * as helmet from 'helmet';
+import { UserAuthModule } from './auth/UserAuthModule';
 
 /**
  * 서버 시작 스크립트.
@@ -39,6 +40,8 @@ import * as helmet from 'helmet';
     TypeOrmModule.forFeature([
       ClientEntity, PushTokenEntity
     ]),
+    // Authentication module
+    UserAuthModule,
   ],
   // Controller layer
   controllers: [
