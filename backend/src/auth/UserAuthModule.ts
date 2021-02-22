@@ -4,6 +4,7 @@ import { UserEntity, UserService } from './service/user.service';
 import { RefreshTokenEntity, RefreshTokenService } from './service/refreshtoken.service';
 import { AuthApplication, AuthConfig } from './application/AuthApplication';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthController, AuthHttpConfig } from './controller/auth.controller';
 
 /**
  * 사용자 인증 모듈
@@ -14,10 +15,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       UserEntity, RefreshTokenEntity,
     ]),
   ],
+  // Controller layer
+  controllers: [
+    AuthController,
+  ],
+  // Service layer
   providers: [
     AuthApplication, AuthConfig,
     UserService, RefreshTokenService,
-    JwtAuthGuard,
+    JwtAuthGuard, AuthHttpConfig,
   ],
   exports: [
     JwtAuthGuard,
