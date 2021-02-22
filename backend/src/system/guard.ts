@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { Repository } from 'typeorm';
 import * as crypto from 'crypto';
-import { ClientEntity } from '../service/client/ClientEntity';
+import { ClientEntity } from '../push/service/client/ClientEntity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorCode, SystemException } from './error';
 

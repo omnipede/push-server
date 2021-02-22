@@ -1,22 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, LogLevel, Module } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
-import { PushController } from './controller/PushController';
-import { PushMessageApplication } from './application/PushMessageApplication';
-import { PushTokenService } from './service/token/PushTokenService';
-import { PushService } from './service/push/PushService';
 import { GlobalErrorFilter, HttpExceptionFilter, SystemExceptionFilter } from './system/error';
-import { ClientService } from './service/client/ClientService';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PushTokenEntity } from './service/token/PushTokenEntity';
-import { ClientEntity } from './service/client/ClientEntity';
-import { TokenController } from './controller/TokenController';
-import { ClientHmacGuard } from './system/guard';
 import { DBModule } from './system/db';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './system/config';
 import * as helmet from 'helmet';
 import { UserAuthModule } from './auth/UserAuthModule';
+import { PushApiModule } from './push/PushApiModule';
 
 /**
  * 서버 시작 스크립트.
@@ -36,23 +27,11 @@ import { UserAuthModule } from './auth/UserAuthModule';
     }),
     // Database connection
     DBModule,
-    // Table entity 등록
-    TypeOrmModule.forFeature([
-      ClientEntity, PushTokenEntity
-    ]),
     // Authentication module
     UserAuthModule,
+    // Push api module
+    PushApiModule,
   ],
-  // Controller layer
-  controllers: [
-    PushController, TokenController
-  ],
-  // Service layer
-  providers: [
-    PushMessageApplication,
-    PushTokenService, PushService, ClientService,
-    ClientHmacGuard,
-  ]
 })
 class AppModule {}
 
