@@ -87,8 +87,12 @@ export class AuthApplication {
     const accessToken = await this.createJwt(username, this.ACCESS_TOKEN_EXP);
     const refreshToken = await this.createJwt(username, this.REFRESH_TOKEN_EXP);
 
-    // Save refresh token
-    await this.refreshTokenService.save(username, refreshToken)
+    // 이미 로그인 되어 있는지 확인
+    const doesExist: boolean = await this.refreshTokenService.doesExist(username, refreshToken);
+
+    // Save refresh token if not exist
+    if (!doesExist)
+      await this.refreshTokenService.save(username, refreshToken)
 
     // Return generated tokens
     return ok({
