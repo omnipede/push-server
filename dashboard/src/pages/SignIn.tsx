@@ -10,6 +10,8 @@ import {
 } from "@material-ui/core";
 import { LockOutlined } from "@material-ui/icons";
 import {login} from "../application/login";
+import {useSetRecoilState} from "recoil";
+import {adminLoginState} from "../store/Admin";
 
 // Page style
 const useStyles = makeStyles((theme) => ({
@@ -40,14 +42,15 @@ function SignIn() {
     const classes = useStyles();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const setAdminLogin = useSetRecoilState(adminLoginState);
 
-    // 입력 받은 user name 이 valid 한지 확인하는 state
+    // 입력 받은 user name 이 valid 한지 확인하는 store
     const [usernameValidation, setUsernameValidation] = useState({
         isError: false,
         errorMessage: '',
     });
 
-    // 입력 받은 password 가 valid 한지 확인하는 state
+    // 입력 받은 password 가 valid 한지 확인하는 store
     const [passwordValidation, setPasswordValidation] = useState({
         isError: false,
         errorMessage: '',
@@ -115,26 +118,40 @@ function SignIn() {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={(e) => {
+                        onClick={async (e) => {
                             e.preventDefault();
                             // Username 의 길이가 0 이면 에러
-                            if (username.length === 0)
+                            if (username.length === 0) {
                                 setUsernameValidation({
                                     isError: true,
                                     errorMessage: 'User name is required',
                                 });
+                                return;
+                            }
                             // Password 의 길이가 0 이면 에러
-                            if (password.length === 0)
+                            if (password.length === 0) {
                                 setPasswordValidation({
                                     isError: true,
                                     errorMessage: 'Password is required'
                                 });
-                            // Console log
-                            console.log({
-                                username, password
-                            });
+                                return;
+                            }
                             // Do login logic
-                            login(username, password);
+                            const result = await login(username, password);
+
+                            // If login success
+                            if (result.isOk()) {
+                                // Get access token, exp from login result
+                                const { accessToken, exp } = result.value;
+
+                                // Save admin login state
+                                setAdminLogin({
+                                    loggedIn: true,
+                                    username,
+                                    accessToken,
+                                    exp,
+                                });
+                            }
                         }}
                     >
                         Sign In
